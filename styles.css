@@ -1,0 +1,119 @@
+/*
+ * Base styles for the LithoCoreX front‑end.
+ *
+ * The design uses a simple layout: a header with the title and
+ * description, a control panel for search and layer toggles, and the
+ * main map area below.  The map height is set via CSS to fill the
+ * remainder of the viewport.
+ */
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+  background-color: #1e3a8a;
+  color: #ffffff;
+  padding: 1rem;
+}
+
+header h1 {
+  margin: 0 0 0.25rem 0;
+  font-size: 1.5rem;
+}
+
+header p {
+  margin: 0;
+  font-size: 0.875rem;
+}
+
+#controls {
+  padding: 0.5rem 1rem;
+  background-color: #f1f5f9;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+}
+
+.search-container {
+  display: flex;
+  gap: 0.5rem;
+  flex: 1 1 250px;
+}
+
+#searchInput {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+}
+
+#searchBtn {
+  padding: 0.5rem 1rem;
+  background-color: #1e3a8a;
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#searchBtn:hover {
+  background-color: #314eb6;
+}
+
+#layerControls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+#layerControls label {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+  background-color: #e5e7eb;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+}
+
+.results {
+  margin-top: 0.5rem;
+  background-color: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  max-height: 200px;
+  overflow-y: auto;
+  width: 100%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.results.hidden {
+  display: none;
+}
+
+.result-item {
+  padding: 0.5rem;
+  border-bottom: 1px solid #f3f4f6;
+  cursor: pointer;
+}
+
+.result-item:last-child {
+  border-bottom: none;
+}
+
+.result-item:hover {
+  background-color: #f1f5f9;
+}
+
+#map {
+  flex: 1;
+  min-height: 400px;
+}

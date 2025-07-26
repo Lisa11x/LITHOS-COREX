@@ -1,0 +1,52 @@
+[
+  {
+    "type": "official",
+    "name": "Simplonpass",
+    "mineral": "Quarz",
+    "latitude": 46.194,
+    "longitude": 8.019,
+    "color": "#a3c1da",
+    "description": "Quarz wächst hier in alpinen Klüften des Simplonpasses. Hydrothermale Bedingungen und Hohlraumbildung fördern das Kristallwachstum.",
+    "routeLink": "https://www.google.com/maps/dir/?api=1&destination=46.194,8.019"
+  },
+  {
+    "type": "unofficial",
+    "name": "Gotthardmassiv",
+    "mineral": "Granat",
+    "latitude": 46.565,
+    "longitude": 8.541,
+    "color": "#b83a4b",
+    "description": "Granat findet sich hier in metamorphen Gesteinen des Gotthardmassivs. Hoher Druck und Temperatur begünstigen seine Bildung.",
+    "routeLink": "https://www.google.com/maps/dir/?api=1&destination=46.565,8.541"
+  },
+  {
+    "type": "potential",
+    "name": "Rhonetal",
+    "mineral": "Diamant (potenziell)",
+    "latitude": 46.300,
+    "longitude": 7.600,
+    "color": "#8c8c8c",
+    "description": "Basierend auf geologischen Analysen könnte der Druck und die Zusammensetzung tief im Untergrund des Rhonetals die Entstehung von Diamanten ermöglichen.",
+    "routeLink": "https://www.google.com/maps/dir/?api=1&destination=46.300,7.600"
+  },
+  {
+    "type": "magnetic",
+    "name": "Magnetanomalie Zürichsee",
+    "mineral": "Magnetit",
+    "latitude": 47.236,
+    "longitude": 8.799,
+    "color": "#4b5563",
+    "description": "Diese Zone weist erhöhte magnetische Anomalien auf. Magnetit kann hier aufgrund der geologischen Voraussetzungen vorkommen.",
+    "routeLink": "https://www.google.com/maps/dir/?api=1&destination=47.236,8.799"
+  },
+  {
+    "type": "geologic",
+    "name": "Alpstein-Kalk",
+    "mineral": "Calcit",
+    "latitude": 47.279,
+    "longitude": 9.407,
+    "color": "#fde68a",
+    "description": "Der Alpstein besteht aus Kalkgestein, in dem sich Calcit in Klüften und Karsthöhlen bildet.",
+    "routeLink": "https://www.google.com/maps/dir/?api=1&destination=47.279,9.407"
+  }
+]
