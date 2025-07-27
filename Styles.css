@@ -1,0 +1,89 @@
+/* Grundlegende Stile und Schriftart */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    Helvetica, Arial, sans-serif;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: #f0f2f5;
+  color: #1c1e21;
+}
+
+/* Kopfzeile */
+header {
+  background-color: #ffffff;
+  padding: 1rem 2rem;
+  border-bottom: 1px solid #dddfe2;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 1001; /* Stellt sicher, dass der Header über der Karte liegt */
+}
+
+header h1 {
+  margin: 0;
+  font-size: 1.75rem;
+  color: #0d47a1; /* Dunkelblau für einen professionellen Look */
+}
+
+header p {
+  margin: 0.25rem 0 0;
+  color: #606770;
+}
+
+/* Steuerungselemente (Suche, Layer) */
+#controls {
+  background-color: #f8f9fa;
+  padding: 1rem 2rem;
+  border-bottom: 1px solid #dddfe2;
+}
+
+.search-container {
+  display: flex;
+  gap: 0.5rem;
+}
+
+#searchInput {
+  flex-grow: 1;
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+#searchBtn {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: bold;
+  color: #fff;
+  background-color: #1877f2; /* Blau, passend zum Header */
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+#searchBtn:hover {
+  background-color: #166fe5;
+}
+
+/* Karten-Container */
+main {
+  flex-grow: 1;
+  position: relative;
+}
+
+#map {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Stile für die Layer-Steuerung von Leaflet */
+.leaflet-control-layers {
+  background: #fff;
+  padding: 0.5rem;
+  border-radius: 5px;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+}
