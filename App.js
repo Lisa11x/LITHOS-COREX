@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // =================================================================
   //      KONFIGURATION & INITIALISIERUNG
   // =================================================================
-  const API_KEY = '6184997cfb3b79aac9eab4d750ce29b0'; // WICHTIG: Ersetze dies durch deinen echten API-Key!
+  const API_KEY = 'DEIN_API_KEY_HIER'; // WICHTIG: Ersetze dies durch deinen echten API-Key!
   const BASE_URL = 'https://api.mindat.org/v1/';
 
   // Initialisiert die Leaflet-Karte, zentriert auf die Schweiz
@@ -19,8 +19,10 @@ document.addEventListener('DOMContentLoaded', () => {
   //      KARTEN-LAYER
   // =================================================================
 
-  // Layer-Gruppe für die Suchergebnisse von Mindat
-  const mindatLayer = L.layerGroup().addTo(map);
+  // Layer-Gruppen für die verschiedenen Fundort-Typen
+  const officialLayer = L.layerGroup().addTo(map);
+  const unofficialLayer = L.layerGroup().addTo(map);
+  const potentialLayer = L.layerGroup(); // Dieser Layer wird am Anfang nicht angezeigt
 
   // Geologischer Layer von Swisstopo
   const geologyLayer = L.tileLayer.wms(
@@ -33,15 +35,48 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   );
 
-  // Objekt, das die Basis- und Overlay-Layer für die Steuerung enthält
-  const baseLayers = {};
+  // Aeromagnetischer Layer der Schweiz
+  const magneticLayer = L.tileLayer.wms(
+    'https://wms.geo.admin.ch/',
+    {
+      layers: 'ch.swisstopo.geophysik-magnetik-totalintensitaet',
+      format: 'image/png',
+      transparent: true,
+      attribution: '© Swisstopo',
+    }
+  );
+
+  // Objekt, das die Layer für die Steuerung enthält
   const overlayLayers = {
-    'Mineral-Fundorte (Mindat)': mindatLayer,
+    'Offizielle Fundorte': officialLayer,
+    'Inoffizielle Fundorte': unofficialLayer,
+    'Potenzial: Diamanten (Beispiel)': potentialLayer,
     'Geologie (Swisstopo)': geologyLayer,
+    'Magnetanomalien (Swisstopo)': magneticLayer,
   };
 
-  // Fügt die Layer-Steuerung zur Karte hinzu
-  L.control.layers(baseLayers, overlayLayers).addTo(map);
+  L.control.layers(null, overlayLayers).addTo(map);
+
+  // =================================================================
+  //      POTENZIALZONEN (Beispiel-Implementierung)
+  // =================================================================
+  // HINWEIS: Dies ist eine vereinfachte Demonstration.
+  // Echte Potenzialzonen benötigen komplexe geologische Regeln.
+  // Regel: "Zeige mögliches Diamant-Vorkommen in der Nähe von Kimberlit-ähnlichen Zonen"
+  // Wir simulieren dies mit einem Beispiel-Polygon im Jura.
+  const diamondPotentialZone = [
+      [47.2, 7.0],
+      [47.3, 7.2],
+      [47.1, 7.3],
+  ];
+  L.polygon(diamondPotentialZone, {
+    color: 'red',
+    fillColor: '#f03',
+    fillOpacity: 0.4,
+  })
+  .bindPopup('<b>Potenzialzone: Diamant</b><br>Begründung: In diesem Gebiet gibt es geologische Indikatoren (z.B. hohe magnetische Anomalien und spezifische Gesteinsformationen), die auf das mögliche Vorkommen von Kimberlit-Schloten hindeuten.')
+  .addTo(potentialLayer);
+
 
   // =================================================================
   //      API & DATENVERARBEITUNG
@@ -53,77 +88,77 @@ document.addEventListener('DOMContentLoaded', () => {
   async function searchAndDisplayMinerals() {
     const query = searchInput.value;
     if (!query) {
-      alert('Bitte gib ein Mineral zum Suchen ein.');
+      alert('Bitte gib ein Mineral oder eine Farbe zum Suchen ein.');
       return;
     }
-    if (API_KEY === 'DEIN_API_KEY_HIER' || !API_KEY) {
-      alert(
-        'FEHLER: Bitte füge deinen Mindat-API-Key in die app.js Datei ein.'
-      );
+    if (API_KEY === '6184997cfb3b79aac9eab4d750ce29b0' || !API_KEY) {
+      alert('FEHLER: Bitte füge deinen Mindat-API-Key in die app.js Datei ein.');
       return;
     }
 
-    // Bestehende Marker von der Karte entfernen
-    mindatLayer.clearLayers();
-    searchBtn.disabled = true; // Deaktiviert den Button während der Suche
-    searchBtn.textContent = 'Suche...'; // Ändert den Button-Text
+    officialLayer.clearLayers();
+    unofficialLayer.clearLayers();
+    searchBtn.disabled = true;
+    searchBtn.textContent = 'Suche...';
 
     try {
-      // NEU: Wir führen zwei API-Anfragen gleichzeitig aus
-      const [localitiesRes, mineralRes] = await Promise.all([
-        fetch(
-          `${BASE_URL}localities/?mineral_name=${query}&country=Switzerland&page_size=100`,
-          { headers: { Authorization: `Token ${API_KEY}` } }
-        ),
-        fetch(`${BASE_URL}minerals/?name=${query}`, {
-          headers: { Authorization: `Token ${API_KEY}` },
-        }),
-      ]);
+      // Erweiterte Suche: Wir suchen nach Mineralnamen ODER Farbe
+      const response = await fetch(
+        `${BASE_URL}localities/?mineral_name=${query}&mineral_colour=${query}&country=Switzerland&page_size=200`,
+        { headers: { Authorization: `Token ${API_KEY}` } }
+      );
 
-      if (!localitiesRes.ok || !mineralRes.ok)
-        throw new Error(`API-Fehler`);
+      if (!response.ok) throw new Error(`API-Fehler: ${response.statusText}`);
 
-      const localitiesData = await localitiesRes.json();
-      const mineralData = await mineralRes.json();
+      const data = await response.json();
 
-      // NEU: Wir holen uns die Beschreibung aus der Mineral-Antwort
-      const mineralDescription =
-        mineralData.results[0]?.description_short || 'Keine Beschreibung verfügbar.';
-
-      if (localitiesData.results.length === 0) {
-        alert('Keine Fundorte für dieses Mineral in der Schweiz gefunden.');
+      if (data.results.length === 0) {
+        alert('Keine Fundorte für diese Suche in der Schweiz gefunden.');
         return;
       }
 
-      // Füge für jeden Fundort einen Marker hinzu
-      localitiesData.results.forEach((loc) => {
+      // Daten verarbeiten und Marker erstellen
+      data.results.forEach((loc) => {
         if (loc.latitude && loc.longitude) {
-          const marker = L.marker([loc.latitude, loc.longitude]).addTo(
-            mindatLayer
-          );
+            // Logik zur Unterscheidung offiziell/inoffiziell (Beispiel)
+            // Annahme: Fundorte mit "Stollen" oder "Mine" im Namen sind offiziell.
+            const isOfficial = /mine|stollen|bruch/i.test(loc.name);
+            const targetLayer = isOfficial ? officialLayer : unofficialLayer;
+            const markerColor = isOfficial ? 'blue' : 'grey';
 
-          // NEU: Das Popup enthält jetzt die Mineral-Beschreibung
-          const popupContent = `
-            <b>${loc.name}</b><br>
-            <i>Gefundenes Mineral: ${query}</i><br><br>
-            <b>Beschreibung:</b><br>
-            <p style="margin: 0; max-height: 100px; overflow-y: auto;">${mineralDescription}</p><br>
-            <a href="https://www.google.com/maps/search/?api=1&query=${loc.latitude},${loc.longitude}" target="_blank">Route mit Google Maps</a>
-          `;
-          marker.bindPopup(popupContent);
+            const marker = L.circleMarker([loc.latitude, loc.longitude], {
+                radius: 6,
+                color: markerColor,
+                fillColor: markerColor,
+                fillOpacity: 0.8,
+            }).addTo(targetLayer);
+
+            // Erklärung, warum das Mineral hier wächst (Beispiel)
+            const geoExplanation = isOfficial
+                ? 'Dieses Mineral entstand durch hydrothermale Prozesse im Zusammenhang mit dem hiesigen Granitmassiv.'
+                : 'Ein typisches Zerrkluft-Mineral dieser alpinen Region.';
+
+            const popupContent = `
+                <b>${loc.name}</b><br>
+                <i>${isOfficial ? 'Offizieller' : 'Inoffizieller'} Fundort</i><br><br>
+                <b>Geologischer Kontext:</b><br>
+                <p style="margin: 0;">${geoExplanation}</p><br>
+                <a href="https://www.google.com/maps?q=${loc.latitude},${loc.longitude}" target="_blank">Route mit Google Maps</a>
+            `;
+            marker.bindPopup(popupContent);
         }
       });
 
       // Zoomt auf die neuen Marker
-      if (mindatLayer.getLayers().length > 0) {
-        map.fitBounds(mindatLayer.getBounds());
+      const allBounds = L.featureGroup([...officialLayer.getLayers(), ...unofficialLayer.getLayers()]).getBounds();
+      if (allBounds.isValid()) {
+        map.fitBounds(allBounds);
       }
 
     } catch (error) {
       console.error('Fehler bei der Suche:', error);
       alert('Ein Fehler ist aufgetreten. Überprüfe die Konsole.');
     } finally {
-      // NEU: Setzt den Such-Button wieder zurück, auch wenn ein Fehler auftritt
       searchBtn.disabled = false;
       searchBtn.textContent = 'Suchen';
     }
